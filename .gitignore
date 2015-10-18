@@ -27,6 +27,7 @@
 *.out
 *.app
 
-# stuff we added
+# Ignore Mac specific files
 *.xccheckout
 *.xcuserstate
+.DS_Store
