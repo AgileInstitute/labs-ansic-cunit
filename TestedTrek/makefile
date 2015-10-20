@@ -4,10 +4,10 @@ TESTS := bin/testrunner
 
 BUILDDIR := build
 TESTDIR := test
- 
+
 OBJECTS := build/game.o build/klingon.o
-CFLAGS := -ansi
-LIB := -l ../../stuff/lib/libcunit.so
+CFLAGS := -ansi -std=c99
+LIB := -L ../../stuff/lib  -lcunit
 INC := -I ../../stuff/include
 
 $(BUILDDIR)/%.o: src/%.c
@@ -17,7 +17,7 @@ $(TESTDIR)/%.o: $(TESTDIR)/%.c
 	$(CC) $(CFLAGS) $(INC) -c -o $@ $<
 
 clean:
-	@echo " *** Cleaning"; 
+	@echo " *** Cleaning";
 	$(RM) $(BUILDDIR)/*.o $(TESTDIR)/*.o $(APP) $(TESTS)
 
 $(APP): $(OBJECTS) $(BUILDDIR)/simtrek.o
