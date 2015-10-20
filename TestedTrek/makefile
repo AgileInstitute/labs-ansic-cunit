@@ -26,7 +26,7 @@ $(APP): $(OBJECTS) $(BUILDDIR)/simtrek.o
 
 $(TESTS): $(TESTDIR)/tests.o $(OBJECTS)
 	@echo " *** Building $@"
-	$(CC) $^ $(LIB) -o $(TESTS)
+	$(CC) $^ -o $(TESTS) $(LIB)
 
 play: $(APP)
 	@echo " *** Running $^"
