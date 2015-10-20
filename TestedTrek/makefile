@@ -7,8 +7,8 @@ TESTDIR := test
  
 OBJECTS := build/game.o build/klingon.o
 CFLAGS := -ansi
-LIB := 
-INC := 
+LIB := -l ../../stuff/lib/libcunit.so
+INC := -I ../../stuff/include
 
 $(BUILDDIR)/%.o: src/%.c
 	$(CC) $(CFLAGS) $(INC) -c -o $@ $<
