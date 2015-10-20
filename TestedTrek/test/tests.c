@@ -49,16 +49,16 @@ int main()
 
    /* add a suite to the registry */
    CU_pSuite phaserSuite = NULL;
-   pSuite = CU_add_suite("Phasers", init_game, clean_game);
-   if (NULL == pSuite) {
+   phaserSuite = CU_add_suite("Phasers", init_game, clean_game);
+   if (NULL == phaserSuite) {
       CU_cleanup_registry();
       return CU_get_error();
    }
 
    /* add a suite to the registry */
    CU_pSuite photonSuite = NULL;
-   pSuite = CU_add_suite("Photons", init_game, clean_game);
-   if (NULL == pSuite) {
+   photonSuite = CU_add_suite("Photons", init_game, clean_game);
+   if (NULL == photonSuite) {
       CU_cleanup_registry();
       return CU_get_error();
    }
