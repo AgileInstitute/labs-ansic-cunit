@@ -1,18 +1,9 @@
-//
-//  Example.cpp
-//  Example
-//
+static int m_iValue = 0;
 
-#include "Example.h"
-
-ExampleClass::ExampleClass() {
-	m_iValue = 0;
-}
-
-int ExampleClass::GetValue() {
+int getValue() {
 	return m_iValue;
 }
 
-void ExampleClass::DoSomething() {
+void doSomething() {
 	m_iValue = 3;
 }
