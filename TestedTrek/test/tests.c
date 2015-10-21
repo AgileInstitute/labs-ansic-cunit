@@ -4,7 +4,9 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "CUnit/Basic.h"
+
+/* CUnit includes */
+#include "Basic.h"
 
 /* Pointer to the file used by the tests. */
 static FILE* temp_file = NULL;
