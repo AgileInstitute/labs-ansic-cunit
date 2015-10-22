@@ -3,10 +3,14 @@
  */
 
 #include <stdio.h>
+#include <unistd.h>
 #include <string.h>
 
 /* CUnit includes */
 #include "Basic.h"
+
+/* production includes */
+#include "klingon.h"
 
 /* Pointer to the file used by the tests. */
 static FILE* temp_file = NULL;
@@ -15,8 +19,11 @@ static FILE* temp_file = NULL;
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
  */
+char output[256];
+
 int init_game(void)
 {
+	strcpy(output, "nothing to see here");
       return 0;
 }
 
@@ -29,14 +36,18 @@ int clean_game(void)
       return 0;
 }
 
-void test_PassingScenario(void)
+void test_WhenPhaserRequestExceedsEnergyLevel(void)
 {
-      CU_ASSERT(0);
+	Klingon klingon;
+	initKlingon(&klingon);
+
+	char * oneMoreUnitOfEnergyThanWeHave = "10001";
+	fireWeapon("phaser", "10001", &klingon);
+	CU_ASSERT_STRING_EQUAL(output, "Insufficient energy to fire phasers!\n");
 }
 
-void test_FailingScenario(void)
+void test_PhotonScenario(void)
 {
-      CU_ASSERT(1);
 }
 
 /* The main() function for setting up and running the tests.
@@ -70,10 +81,10 @@ int main()
         /* add the tests to the suites */
 
         || (NULL == CU_add_test(phaserSuite,
-            "description here", test_PassingScenario))
+            "test_WhenPhaserRequestExceedsEnergyLevel", test_WhenPhaserRequestExceedsEnergyLevel))
 
         || (NULL == CU_add_test(photonSuite,
-            "description here", test_FailingScenario))
+            "description here", test_PhotonScenario))
 
        )
    {
