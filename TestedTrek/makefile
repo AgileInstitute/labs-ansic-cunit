@@ -7,7 +7,7 @@ TESTDIR := test
 
 OBJECTS := build/game.o build/klingon.o
 CFLAGS := -ansi -std=c99
-LIB := ../lib/libcunit.a
+LIB := ../lib/libcunit.a -static
 INC := -I ../include -I src
 
 all: test
@@ -26,7 +26,7 @@ $(APP): $(OBJECTS) $(BUILDDIR)/simtrek.o
 	@echo " *** Building $@"
 	$(CC) $^ -o $(APP) 
 
-$(TESTS): $(OBJECTS) $(TESTDIR)/tests.o 
+$(TESTS): $(TESTDIR)/mocks.o $(OBJECTS) $(TESTDIR)/tests.o 
 	@echo " *** Building $@"
 	$(CC) $^ -o $(TESTS) $(LIB)
 
