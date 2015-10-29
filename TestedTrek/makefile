@@ -6,8 +6,8 @@ BUILDDIR := build
 TESTDIR := test
 
 OBJECTS := build/game.o build/klingon.o
-CFLAGS := -ansi -std=c99
-LIB := ../lib/libcunit.a -static
+CFLAGS := -O0 -ansi -std=c99
+LIB := ../lib/libcunit.a 
 INC := -I ../include -I src
 
 all: test

@@ -10,7 +10,8 @@
 #include "Basic.h"
 
 /* production includes */
-#include "klingon.h"
+#include "game.h"
+
 
 /* Pointer to the file used by the tests. */
 static FILE* temp_file = NULL;
