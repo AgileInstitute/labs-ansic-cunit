@@ -63,19 +63,17 @@ void test_WhenPhasersFiredWithInsufficientEnergy(void)
 	CU_ASSERT_STRING_EQUAL(mocks_allOutput(), "Insufficient energy to fire phasers!\n");
 }
 
-/*
-void test_WhenEnergyExpendedEvenWhenPhasersFiredWhileKlingonOutOfRange
+void test_WhenEnergyExpendedEvenWhenPhasersFiredWhileKlingonOutOfRange(void)
 {
-    int maxPhaserRange = 4000;
-	klingon->distance = maxPhaserRange + 1;
+	int maxPhaserRange = 4000;
+	klingon.distance = maxPhaserRange + 1;
 	fireWeapon("phaser", "1000", &klingon);
 
 	CU_ASSERT_STRING_EQUAL(mocks_allOutput(),
 		"Klingon out of range of phasers at 4001 sectors...\n");
 
-	CU_ASSERT_INT_EQUAL(ENERGY_IN_NEW_GAME - 1000, _e);
+	CU_ASSERT_EQUAL(INITIAL_ENERGY - 1000, getEnergyLevel());
 }
-*/
 
 void test_PhotonScenario(void)
 {
@@ -117,6 +115,9 @@ int main()
 
         || (NULL == CU_add_test(phaserSuite,
             "test_WhenPhasersFiredWithInsufficientEnergy", test_WhenPhasersFiredWithInsufficientEnergy))
+
+        || (NULL == CU_add_test(phaserSuite,
+            "test_WhenEnergyExpendedEvenWhenPhasersFiredWhileKlingonOutOfRange", test_WhenEnergyExpendedEvenWhenPhasersFiredWhileKlingonOutOfRange))
 
         || (NULL == CU_add_test(photonSuite,
             "description here", test_PhotonScenario))
