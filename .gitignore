@@ -26,6 +26,8 @@
 *.exe
 *.out
 *.app
+simtrek
+testrunner
 
 # Ignore Mac specific files
 *.xccheckout
