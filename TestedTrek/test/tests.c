@@ -33,6 +33,7 @@ int init_game(void)
 /*VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV*/
 
 	mocks_setup();
+	e_ = INITIAL_ENERGY;
 	initKlingon(&klingon);
 
 /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
@@ -57,6 +58,7 @@ int clean_game(void)
 
 void test_WhenPhasersFiredWithInsufficientEnergy(void)
 {
+	init_game(); /* amazingly, CUnit does not call this for each test */
 
 	char * oneMoreUnitOfEnergyThanWeHave = "10001";
 	fireWeapon("phaser", "10001", &klingon);
@@ -65,18 +67,40 @@ void test_WhenPhasersFiredWithInsufficientEnergy(void)
 
 void test_WhenEnergyExpendedEvenWhenPhasersFiredWhileKlingonOutOfRange(void)
 {
+	init_game(); /* amazingly, CUnit does not call this for each test */
+
 	int maxPhaserRange = 4000;
 	klingon.distance = maxPhaserRange + 1;
 	fireWeapon("phaser", "1000", &klingon);
 
+	CU_ASSERT_EQUAL(INITIAL_ENERGY - 1000, e_);
+
 	CU_ASSERT_STRING_EQUAL(mocks_allOutput(),
 		"Klingon out of range of phasers at 4001 sectors...\n");
-
-	CU_ASSERT_EQUAL(INITIAL_ENERGY - 1000, getEnergyLevel());
 }
+
+void test_WhenPhasersFiredKlingonDestroyed(void)
+{
+	init_game(); /* amazingly, CUnit does not call this for each test */
+
+	klingon.distance = 2000;
+	klingon.energy = 200;
+	fireWeapon("phaser", "1000", &klingon);
+
+	mocks_verboseAssertIntEquals(INITIAL_ENERGY - 1000, e_);
+	CU_ASSERT_EQUAL(INITIAL_ENERGY - 1000, e_);
+
+	CU_ASSERT_TRUE(klingon.destroyed);
+
+	CU_ASSERT_STRING_EQUAL(mocks_allOutput(),
+		"Phasers hit Klingon at 2000 sectors with 500 units\nKlingon destroyed!\n");
+}
+
 
 void test_PhotonScenario(void)
 {
+	init_game(); /* amazingly, CUnit does not call this for each test */
+
 }
 
 /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
@@ -111,13 +135,21 @@ int main()
 
    if (0
 
-        /* add the tests to the suites */
+        /* PHASERS! */
 
-        || (NULL == CU_add_test(phaserSuite,
-            "test_WhenPhasersFiredWithInsufficientEnergy", test_WhenPhasersFiredWithInsufficientEnergy))
+	|| (NULL == CU_add_test(phaserSuite,
+	"test_WhenPhasersFiredWithInsufficientEnergy",
+	test_WhenPhasersFiredWithInsufficientEnergy))
 
-        || (NULL == CU_add_test(phaserSuite,
-            "test_WhenEnergyExpendedEvenWhenPhasersFiredWhileKlingonOutOfRange", test_WhenEnergyExpendedEvenWhenPhasersFiredWhileKlingonOutOfRange))
+	|| (NULL == CU_add_test(phaserSuite,
+	"test_WhenEnergyExpendedEvenWhenPhasersFiredWhileKlingonOutOfRange",
+	test_WhenEnergyExpendedEvenWhenPhasersFiredWhileKlingonOutOfRange))
+
+	|| (NULL == CU_add_test(phaserSuite,
+	"test_WhenPhasersFiredKlingonDestroyed",
+	test_WhenPhasersFiredKlingonDestroyed))
+
+        /* PHOTONS! */
 
         || (NULL == CU_add_test(photonSuite,
             "description here", test_PhotonScenario))

@@ -5,12 +5,8 @@
 #include "game.h"
 #include "klingon.h"
 
-static int e_ = INITIAL_ENERGY;
+int e_ = INITIAL_ENERGY;
 static int t_ = 8;
-
-int getEnergyLevel() {
-	return e_;
-}
 
 void fireWeapon(char *command, char *parameter, struct Klingon *enemy) {
 	if (streq(command, "phaser")) {

@@ -36,45 +36,6 @@ protected:
 GameFixturePhaser::GameFixturePhaser() :context(nullptr){}
 
 
-static const int EnergyInNewGame = 10000;
-
-TEST_F(GameFixturePhaser, PhasersFiredWithInsufficientEnergy) {
-    stringstream ten_thousand_and_one;
-    ten_thousand_and_one << EnergyInNewGame + 1;
-    galaxyDictionary["amount"] =  new string(ten_thousand_and_one.str());
-    game.fireWeapon(context);
-
-    EXPECT_EQ("Insufficient energy to fire phasers! || ", galaxyOutput);
-}
-
-TEST_F(GameFixturePhaser, EnergyExpendedEvenWhenPhasersFiredWhileKlingonOutOfRange) {
-    int maxPhaserRange = 4000;
-    galaxyDictionary["amount"] = new string("1000");
-    galaxyDictionary["target"] = new MockKlingon(maxPhaserRange + 1);
-    game.fireWeapon(context);
-
-    EXPECT_EQ("Klingon out of range of phasers at 4001 sectors... || ", galaxyOutput);
-
-    EXPECT_EQ(EnergyInNewGame - 1000, game.energyRemaining());
-}
-
-static int mockRandom(void) {
-    // it's not random; that's the point!
-    return 0;
-}
-
-TEST_F(GameFixturePhaser, PhasersFiredKlingonDestroyed) {
-    MockKlingon* klingon = new MockKlingon(2000, 200);
-    galaxyDictionary["amount"] = new string("1000");
-    galaxyDictionary["target"] = klingon;
-    Game::generator = &mockRandom;
-    game.fireWeapon(context);
-
-    EXPECT_EQ("Phasers hit Klingon at 2000 sectors with 500 units || Klingon destroyed! || ", galaxyOutput);
-    EXPECT_EQ(EnergyInNewGame - 1000, game.energyRemaining());
-
-    EXPECT_TRUE(klingon->deleteWasCalled());
-}
 
 TEST_F(GameFixturePhaser, PhasersDamageOfZeroStillHits_AndNondestructivePhaserDamageDisplaysRemaining) {
     string* minimalFired = new string("0");

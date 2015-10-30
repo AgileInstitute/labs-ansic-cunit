@@ -7,7 +7,7 @@
 #define RND(maximum) (rand() % maximum)
 #define streq(a, b) (strcmp(a, b) == 0)
 
-int getEnergyLevel();
+extern int e_;
 void fireWeapon(char *command, char *parameter, struct Klingon *enemy);
 
 #endif
