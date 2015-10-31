@@ -10,7 +10,7 @@ CFLAGS := -O0 -ansi -std=c99
 LIB := -L ../lib ../lib/libcunit.a 
 INC := -I ../include -I src
 
-all: test
+all: clean test
 
 $(BUILDDIR)/%.o: src/%.c
 	$(CC) $(CFLAGS) $(INC) -c -o $@ $<
