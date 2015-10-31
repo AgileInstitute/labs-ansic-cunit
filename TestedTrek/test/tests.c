@@ -92,15 +92,149 @@ void test_WhenPhasersFiredKlingonDestroyed(void)
 
 	CU_ASSERT_TRUE(klingon.destroyed);
 
-	CU_ASSERT_STRING_EQUAL(mocks_allOutput(),
-		"Phasers hit Klingon at 2000 sectors with 500 units\nKlingon destroyed!\n");
+	char *expected =
+"Phasers hit Klingon at 2000 sectors with 500 units\nKlingon destroyed!\n";
+	char *actual = mocks_allOutput();
+	mocks_verboseAssertStringEquals(expected, actual);
+	CU_ASSERT_STRING_EQUAL(actual, expected);
 }
 
-
-void test_PhotonScenario(void)
+/*
+** NOTE: This test covers two behaviors:
+** First...
+**   Characterizes a defect: firing 0 hits with 1 unit of energy.
+**   We acknowledge it in this test, log it, but we don't fix it until asked!
+**   After all, it's a "feature"!
+** Second...
+**   Tests that damage subtracts from Klingon energy and displays remaining
+**   when the Klingon is not destroyed.
+*/
+void test_BUGWhenPhaserFireZeroStillHits_AndPhaserDamageDisplaysRemaining(void)
 {
 	init_game(); /* amazingly, CUnit does not call this for each test */
 
+	klingon.distance = 2000;
+	klingon.energy = 200;
+
+	char *zeroEnergyFired = "0";
+	fireWeapon("phaser", zeroEnergyFired, &klingon);
+
+	mocks_verboseAssertIntEquals(INITIAL_ENERGY, e_);
+	CU_ASSERT_EQUAL(e_, INITIAL_ENERGY);
+
+	char *expected =
+"Phasers hit Klingon at 2000 sectors with 1 units\nKlingon has 199 remaining\n";
+	char *actual = mocks_allOutput();
+	mocks_verboseAssertStringEquals(expected, actual);
+	CU_ASSERT_STRING_EQUAL(actual, expected);
+}
+
+void test_NotifiedIfNoTorpedoesRemain(void)
+{
+	init_game(); /* amazingly, CUnit does not call this for each test */
+
+	t_ = 0;
+
+	klingon.distance = 2000;
+	klingon.energy = 200;
+	fireWeapon("photon", "", &klingon);
+
+	char *expected = "No more photon torpedoes!\n";
+	char *actual = mocks_allOutput();
+	mocks_verboseAssertStringEquals(expected, actual);
+	CU_ASSERT_STRING_EQUAL(actual, expected);
+
+}
+
+void test_WhenTorpedoMissesDueToRandomFactors(void)
+{
+	init_game(); /* amazingly, CUnit does not call this for each test */
+	t_ = 5;
+
+	/* in this test case, important that rand() return 2 or 3 */
+	int random_numbers[1] = { 2 };
+	mocks_setRand(random_numbers, 1);
+
+    	int distanceWhereRandomFactorsHoldSway = 2500;
+	klingon.distance = distanceWhereRandomFactorsHoldSway;
+	klingon.energy = 200;
+	fireWeapon("photon", "", &klingon);
+
+	char *expected = "Torpedo missed Klingon at 2500 sectors...\n";
+	char *actual = mocks_allOutput();
+	mocks_verboseAssertStringEquals(expected, actual);
+	CU_ASSERT_STRING_EQUAL(actual, expected);
+    
+	mocks_verboseAssertIntEquals(4, t_);
+	CU_ASSERT_EQUAL(t_, 4);
+}
+
+void test_WhenTorpedoMissesDueToDistanceAndCleverKlingonEvasiveActions(void)
+{
+	init_game(); /* amazingly, CUnit does not call this for each test */
+	t_ = 5;
+
+	int random_numbers[1] = { 1 };
+	mocks_setRand(random_numbers, 1);
+
+    	int distanceWhereTorpedoesAlwaysMiss = 3500;
+	klingon.distance = distanceWhereTorpedoesAlwaysMiss;
+	klingon.energy = 200;
+	fireWeapon("photon", "", &klingon);
+
+	char *expected = "Torpedo missed Klingon at 3500 sectors...\n";
+	char *actual = mocks_allOutput();
+	mocks_verboseAssertStringEquals(expected, actual);
+	CU_ASSERT_STRING_EQUAL(actual, expected);
+    
+	mocks_verboseAssertIntEquals(4, t_);
+	CU_ASSERT_EQUAL(t_, 4);
+}
+
+void test_WhenTorpedoDestroysKlingon(void)
+{
+	init_game(); /* amazingly, CUnit does not call this for each test */
+	t_ = 5;
+
+	int random_numbers[1] = { 1 };
+	mocks_setRand(random_numbers, 1);
+
+	klingon.distance = 500;
+	klingon.energy = 200;
+	fireWeapon("photon", "", &klingon);
+
+	CU_ASSERT_TRUE(klingon.destroyed);
+
+	char *expected =
+"Photons hit Klingon at 500 sectors with 801 units\nKlingon destroyed!\n";
+	char *actual = mocks_allOutput();
+	mocks_verboseAssertStringEquals(expected, actual);
+	CU_ASSERT_STRING_EQUAL(actual, expected);
+    
+	mocks_verboseAssertIntEquals(4, t_);
+	CU_ASSERT_EQUAL(t_, 4);
+}
+
+void test_WhenTorpedoDamagesKlingon(void)
+{
+	init_game(); /* amazingly, CUnit does not call this for each test */
+	t_ = 5;
+
+	int random_numbers[1] = { 1 };
+	mocks_setRand(random_numbers, 1);
+
+	klingon.distance = 500;
+	klingon.energy = 2000;
+	fireWeapon("photon", "", &klingon);
+
+	char *expected =
+"Photons hit Klingon at 500 sectors with 801 units\nKlingon has 1199 remaining\n";
+	char *actual = mocks_allOutput();
+	mocks_verboseAssertStringEquals(expected, actual);
+	CU_ASSERT_STRING_EQUAL(actual, expected);
+    
+	mocks_verboseAssertIntEquals(4, t_);
+	CU_ASSERT_EQUAL(t_, 4);
 }
 
 /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
@@ -149,10 +283,31 @@ int main()
 	"test_WhenPhasersFiredKlingonDestroyed",
 	test_WhenPhasersFiredKlingonDestroyed))
 
+	|| (NULL == CU_add_test(phaserSuite,
+	"test_BUGWhenPhaserFireZeroStillHits_AndPhaserDamageDisplaysRemaining",
+	test_BUGWhenPhaserFireZeroStillHits_AndPhaserDamageDisplaysRemaining))
+
         /* PHOTONS! */
 
         || (NULL == CU_add_test(photonSuite,
-            "description here", test_PhotonScenario))
+	"test_NotifiedIfNoTorpedoesRemain",
+	test_NotifiedIfNoTorpedoesRemain))
+
+        || (NULL == CU_add_test(photonSuite,
+	"test_WhenTorpedoMissesDueToRandomFactors",
+	test_WhenTorpedoMissesDueToRandomFactors))
+
+        || (NULL == CU_add_test(photonSuite,
+	"test_WhenTorpedoMissesDueToDistanceAndCleverKlingonEvasiveActions",
+	test_WhenTorpedoMissesDueToDistanceAndCleverKlingonEvasiveActions))
+
+        || (NULL == CU_add_test(photonSuite,
+	"test_WhenTorpedoDestroysKlingon",
+	test_WhenTorpedoDestroysKlingon))
+
+        || (NULL == CU_add_test(photonSuite,
+	"test_WhenTorpedoDamagesKlingon",
+	test_WhenTorpedoDamagesKlingon))
 
        )
    {

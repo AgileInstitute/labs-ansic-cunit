@@ -8,6 +8,7 @@
 #define streq(a, b) (strcmp(a, b) == 0)
 
 extern int e_;
+extern int t_;
 void fireWeapon(char *command, char *parameter, struct Klingon *enemy);
 
 #endif

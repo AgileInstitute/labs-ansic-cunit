@@ -6,7 +6,7 @@
 #include "klingon.h"
 
 int e_ = INITIAL_ENERGY;
-static int t_ = 8;
+int t_ = 8;
 
 void fireWeapon(char *command, char *parameter, struct Klingon *enemy) {
 	if (streq(command, "phaser")) {
